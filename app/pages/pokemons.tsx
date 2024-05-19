@@ -8,7 +8,7 @@ import { ActivityIndicator, FlatList, StyleSheet } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { PokemonService } from "../../src/services"
-import { Klfgjhsoigbhb, PokemonCard, PokemonsFooter } from "../../src/components"
+import { PageContainer, PokemonCard, PokemonsFooter } from "../../src/components"
 import { Pokemon } from "../../src/models"
 
 const PAGE_SIZE = 20
@@ -34,7 +34,7 @@ export default function Page() {
     })
 
   return (
-    <Klfgjhsoigbhb title="Pokemons">
+    <PageContainer title="Pokemons">
       {isLoading && <ActivityIndicator />}
       {!isLoading && (
         <FlatList
@@ -56,7 +56,7 @@ export default function Page() {
           }
         />
       )}
-    </Klfgjhsoigbhb>
+    </PageContainer>
   )
 }
 
