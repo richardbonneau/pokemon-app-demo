@@ -1,21 +1,39 @@
 import React from "react"
-import { StyleSheet, Text, View } from "react-native"
+import { Pressable, StyleSheet, Text, View } from "react-native"
 
 import { Pokemon } from "../models"
 import { Colors } from "../utils"
+import { Link } from "expo-router"
 
 
+// Changed prop name to `pokemon` because it's more intuitive and readable than `item`
 interface IProps {
-  item: Pokemon
+  pokemon: Pokemon
   isFirst?: boolean
 }
 
 export const PokemonCard: React.FunctionComponent<IProps> =
-  ({ item, isFirst = false }) => {
+  ({ pokemon, isFirst = false }) => {
+
     return (
       <View style={[styles.card, isFirst && styles.first]}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.url}>{item.url}</Text>
+        {/* 
+          Using a different Router Library here I would have used `/pages/pokemon/:id` instead because it follows RESTful routing conventions. 
+          However, I find PokemonDetails to be a better component name than Pokemon because the later is too similar to the other page name at a glance.
+        */}
+        <Link href={
+          {
+            pathname: "/pages/pokemon-details",
+            params: {url: pokemon.url, name:pokemon.name}
+          }
+        } asChild>
+        <Pressable>
+          <Text style={styles.name}>{pokemon.name}</Text>
+          <Text style={styles.url}>{pokemon.url}</Text>
+        </Pressable>
+      
+      </Link>
+
       </View>
     )
   }

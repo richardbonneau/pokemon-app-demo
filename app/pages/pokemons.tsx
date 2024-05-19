@@ -13,7 +13,7 @@ import { Pokemon } from "../../src/models"
 
 const PAGE_SIZE = 20
 
-export default function Page() {
+export default function Pokemons() {
   const insets = useSafeAreaInsets()
 
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
@@ -44,7 +44,7 @@ export default function Page() {
           }]}
           renderItem={
             ({ item, index }) => (
-              <PokemonCard item={item} isFirst={index === 0} />
+              <PokemonCard pokemon={item} isFirst={index === 0} />
             )
           }
           ListFooterComponent={

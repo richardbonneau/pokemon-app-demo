@@ -10,6 +10,13 @@ import axios from "axios";
       );
     return response.data.results;
   }
+
+  async getPokemonDetails(id: string) {
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`);
+    return response.data;
+  }
 }
+
+
 
 export const PokemonService = new PokemonServiceImpl();
