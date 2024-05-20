@@ -8,8 +8,8 @@ import { ActivityIndicator, FlatList, StyleSheet } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { PokemonService } from "../../src/services"
-import { PageContainer, PokemonCard, PokemonsFooter } from "../../src/components"
-import { Pokemon } from "../../src/models"
+import { PageContainer, ListItemCard, PokemonsFooter } from "../../src/components"
+import { URLItem } from "../../src/models"
 
 const PAGE_SIZE = 20
 
@@ -18,9 +18,9 @@ export default function Pokemons() {
 
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery<
-      Pokemon,
+      URLItem,
       DefaultError,
-      InfiniteData<Pokemon, number>,
+      InfiniteData<URLItem, number>,
       string[],
       number
     >({
@@ -44,7 +44,7 @@ export default function Pokemons() {
           }]}
           renderItem={
             ({ item, index }) => (
-              <PokemonCard pokemon={item} isFirst={index === 0} />
+              <ListItemCard item={item} pathname={"/pages/pokemon-details"} isFirst={index === 0} />
             )
           }
           ListFooterComponent={
