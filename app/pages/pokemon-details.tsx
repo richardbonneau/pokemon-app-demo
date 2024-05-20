@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router"
-import React, { useCallback } from "react"
+import React, { useCallback, useMemo } from "react"
 import { Image, Text, StyleSheet, View, FlatList } from "react-native"
 import { ListItemCard, PageContainer } from "../../src/components"
 import { useQuery } from "@tanstack/react-query"
@@ -7,21 +7,14 @@ import { PokemonService } from "../../src/services"
 import { PokemonTypeLabel } from "../../src/components/pokemon-type-label"
 import { Move, PokemonType, URLItem } from "../../src/models"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-
-function getPokemonIdFromUrl(url: string | string[] | undefined): string | undefined {
-  if (typeof url === 'string') {
-    const parts = url.split('/');
-    return parts[parts.length - 2];
-  }
-}
+import { getPokemonIdFromUrl, getSingleParam } from "../../src/utils/helpers"
 
 export default function PokemonDetails() {
   const params = useLocalSearchParams()
   const insets = useSafeAreaInsets()
 
-  const pokemonId = getPokemonIdFromUrl(params.url)
-  const pokemonName: string = typeof params.name === 'string' ? params.name : 'Pokemon';
-
+  const pokemonId = useMemo(() => getPokemonIdFromUrl(params.url), [params.url])
+  const pokemonName = useMemo(() => getSingleParam(params.name) || "Pokemon", [params.name])
 
   if (!pokemonId) {
     return <PageContainer title="Error"><Text>Error: Invalid URL</Text></PageContainer>
