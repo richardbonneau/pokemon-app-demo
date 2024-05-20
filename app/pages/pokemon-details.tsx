@@ -60,8 +60,11 @@ export default function PokemonDetails() {
   };
 
   return (
-    <PageContainer title={pokemonName}>
-      <Image source={{ uri: pokemonDetailsData.sprites.front_default }} style={styles.image} />
+    <PageContainer
+      title={pokemonName}
+      rightComponent={
+        <Image source={{ uri: pokemonDetailsData.sprites.front_default }} style={styles.image} />}>
+
 
       <View style={styles.typesContainer}>
         {pokemonDetailsData.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
