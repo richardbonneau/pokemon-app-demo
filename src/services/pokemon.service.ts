@@ -1,6 +1,6 @@
 import axios from "axios";
 
- class PokemonServiceImpl {
+class PokemonServiceImpl {
   async getPokemons(
     { limit = 20, offset = 0 }: { limit?: number; offset?: number }
   ) {
@@ -15,7 +15,23 @@ import axios from "axios";
     const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`);
     return response.data;
   }
+
+  async getPokemonSpecies(id: string) {
+    const response = await axios.get(
+      `https://pokeapi.co/api/v2/pokemon-species/${id}`
+    );
+    return response.data;
+  }
+
+  async getPokemonEvolutionChain(id: string) {
+    const response = await axios.get(
+      `https://pokeapi.co/api/v2/evolution-chain/${id}`
+    );
+    return response.data;
+  }
 }
+
+
 
 
 

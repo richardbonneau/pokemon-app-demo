@@ -26,25 +26,38 @@ export default function PokemonDetails() {
     return <PageContainer title="Error"><Text>Error: Invalid URL</Text></PageContainer>
   }
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['pokemonDetails', params.id],
+  const { data: pokemonDetailsData, isLoading: pokemonDetailsIsLoading, error: pokemonDetailsError } = useQuery({
+    queryKey: ['pokemonDetails', pokemonId],
     queryFn: () => PokemonService.getPokemonDetails(pokemonId)
   });
 
-  if (isLoading) {
+  const { data: evolutionChainData, isLoading: evolutionChainIsLoading, error: evolutionChainError } = useQuery({
+    queryKey: ['evolutionChain', params.id],
+    queryFn: () => PokemonService.getPokemonSpecies(pokemonId).then((species) => {
+      const evolutionChainId = getPokemonIdFromUrl(species.evolution_chain.url);
+
+      if (!evolutionChainId) {
+        throw new Error('Invalid evolution chain URL');
+      }
+
+      return PokemonService.getPokemonEvolutionChain(evolutionChainId);
+    })
+  });
+
+  if (pokemonDetailsIsLoading) {
     return <PageContainer title="Loading..."><Text>Loading...</Text></PageContainer>;
   }
 
-  if (error) {
-    return <PageContainer title="Error"><Text>An error occurred: {error.message}</Text></PageContainer>;
+  if (pokemonDetailsError) {
+    return <PageContainer title="Error"><Text>An error occurred: {pokemonDetailsError.message}</Text></PageContainer>;
   }
-
+  console.log("evolutionChainData", evolutionChainData)
   return (
     <PageContainer title="Pokemon">
-      <Image source={{ uri: data.sprites.front_default }} style={styles.image} />
+      <Image source={{ uri: pokemonDetailsData.sprites.front_default }} style={styles.image} />
 
       <View style={styles.typesContainer}>
-        {data.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
+        {pokemonDetailsData.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
       </View>
       {/* 
       <View style={styles.abilitiesContainer}>
@@ -52,7 +65,19 @@ export default function PokemonDetails() {
       </View> */}
 
       <FlatList
-        data={data?.moves.slice(0, 5).flat()}
+        data={pokemonDetailsData?.moves.slice(0, 5).flat()}
+        contentContainerStyle={[styles.contentContainerStyle, {
+          paddingBottom: insets.bottom
+        }]}
+        renderItem={
+          ({ item, index }) => (
+            <ListItemCard item={item.move} isFirst={index === 0} />
+          )
+        }
+      />
+
+      <FlatList
+        data={pokemonDetailsData?.moves.slice(0, 5).flat()}
         contentContainerStyle={[styles.contentContainerStyle, {
           paddingBottom: insets.bottom
         }]}
