@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router"
-import React, { useCallback, useMemo } from "react"
-import { Image, Text, StyleSheet, View, FlatList } from "react-native"
+import React, { useCallback, useMemo, useRef } from "react"
+import { Image, Text, StyleSheet, View, FlatList, Animated } from "react-native"
 import { ListItemCard, PageContainer } from "../../src/components"
 import { useQuery } from "@tanstack/react-query"
 import { PokemonService } from "../../src/services"
@@ -12,6 +12,8 @@ import { getPokemonIdFromUrl, getSingleParam } from "../../src/utils/helpers"
 export default function PokemonDetails() {
   const params = useLocalSearchParams()
   const insets = useSafeAreaInsets()
+
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   const pokemonId = useMemo(() => getPokemonIdFromUrl(params.url), [params.url])
   const pokemonName = useMemo(() => getSingleParam(params.name) || "Pokemon", [params.name])
@@ -47,7 +49,7 @@ export default function PokemonDetails() {
   }
   console.log("evolutionChainData", evolutionChainData)
 
-  const getEvolutionNames = (chain: any,) => {
+  const getEvolutionNames = (chain: any) => {
     const urlItems: URLItem[] = [];
     let currentChain = chain;
     while (currentChain) {
@@ -62,38 +64,27 @@ export default function PokemonDetails() {
   return (
     <PageContainer
       title={pokemonName}
-      rightComponent={
-        <Image source={{ uri: pokemonDetailsData.sprites.front_default }} style={styles.image} />}>
-
+      imageUri={pokemonDetailsData.sprites.front_default}
+      scrollY={scrollY}
+    >
 
       <View style={styles.typesContainer}>
         {pokemonDetailsData.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
       </View>
+      <Animated.ScrollView
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+      >
+        {pokemonDetailsData?.moves.slice(0, 10).map((item: any, index: any) => (
+          <ListItemCard item={item.move} isFirst={index === 0} key={index} />
+        ))}
 
-      <FlatList
-        data={pokemonDetailsData?.moves.slice(0, 5).flat()}
-        contentContainerStyle={[styles.contentContainerStyle, {
-          paddingBottom: insets.bottom
-        }]}
-        renderItem={
-          ({ item, index }) => (
-            <ListItemCard item={item.move} isFirst={index === 0} />
-          )
-        }
-      />
-
-      <FlatList
-        data={getEvolutionNames(evolutionChainData?.chain).flat()}
-        contentContainerStyle={[styles.contentContainerStyle, {
-          paddingBottom: insets.bottom
-        }]}
-        renderItem={
-          ({ item, index }) => (
-            <ListItemCard item={item} pathname={"/pages/pokemon-details"} isFirst={index === 0} />
-          )
-        }
-      />
-
+        {getEvolutionNames(evolutionChainData?.chain).map((item, index) => (
+          <ListItemCard item={item} pathname={"/pages/pokemon-details"} isFirst={index === 0} key={index} />
+        ))}
+      </Animated.ScrollView>
     </PageContainer>
   )
 }
@@ -102,10 +93,6 @@ export default function PokemonDetails() {
 const styles = StyleSheet.create({
   contentContainerStyle: {
     padding: 16,
-  },
-  image: {
-    width: 200,
-    height: 200,
   },
   typesContainer: {
     flexDirection: 'row',
