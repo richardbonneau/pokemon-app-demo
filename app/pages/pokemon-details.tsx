@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router"
-import React, { useCallback, useMemo, useRef } from "react"
+import React, { useCallback, useEffect, useMemo, useRef } from "react"
 import { Image, Text, StyleSheet, View, FlatList, Animated } from "react-native"
 import { ListItemCard, PageContainer } from "../../src/components"
 import { useQuery } from "@tanstack/react-query"
@@ -61,22 +61,51 @@ export default function PokemonDetails() {
     return urlItems;
   };
 
+  const imageSize = scrollY.interpolate({
+    inputRange: [0, 100],
+    outputRange: [200, 32],
+    extrapolate: 'clamp'
+  });
+  useEffect(() => {
+    const id = scrollY.addListener(({ value }) => {
+      const imageSizeValue = scrollY.interpolate({
+        inputRange: [0, 100],
+        outputRange: [200, 32],
+        extrapolate: 'clamp'
+      });
+      console.log('scrollY', value, 'imageSize', imageSizeValue);
+    });
+
+    return () => scrollY.removeListener(id);
+  }, []);
   return (
     <PageContainer
       title={pokemonName}
       imageUri={pokemonDetailsData.sprites.front_default}
       scrollY={scrollY}
+      imageSize={imageSize}
     >
-
-      <View style={styles.typesContainer}>
-        {pokemonDetailsData.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
-      </View>
       <Animated.ScrollView
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
+          {
+            listener: (event: { nativeEvent: { contentOffset: { y: number } } }) => {
+              const offsetY = event.nativeEvent.contentOffset.y;
+              const imageSizeValue = scrollY.interpolate({
+                inputRange: [0, 100],
+                outputRange: [200, 32],
+                extrapolate: 'clamp'
+              });
+              console.log('scrollY', offsetY, 'imageSize', imageSizeValue);
+            },
+            useNativeDriver: false
+          }
         )}
       >
+        <View style={[styles.typesContainer]}>
+          {pokemonDetailsData.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
+        </View>
+
         {pokemonDetailsData?.moves.slice(0, 10).map((item: any, index: any) => (
           <ListItemCard item={item.move} isFirst={index === 0} key={index} />
         ))}
@@ -84,6 +113,7 @@ export default function PokemonDetails() {
         {getEvolutionNames(evolutionChainData?.chain).map((item, index) => (
           <ListItemCard item={item} pathname={"/pages/pokemon-details"} isFirst={index === 0} key={index} />
         ))}
+        <View style={{ height: 200 }} />
       </Animated.ScrollView>
     </PageContainer>
   )

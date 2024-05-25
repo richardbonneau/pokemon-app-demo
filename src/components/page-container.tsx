@@ -9,11 +9,12 @@ import { capitalizeFirstLetter } from "../utils/helpers"
 type Props = {
   title: string
   imageUri?: string,
-  scrollY?: Animated.Value
+  scrollY?: Animated.Value,
+  imageSize?: Animated.AnimatedInterpolation<string | number>
 }
 
 export const PageContainer: FunctionComponent<PropsWithChildren<Props>> =
-  ({ children, title, imageUri, scrollY = new Animated.Value(0) }) => {
+  ({ children, title, imageUri, scrollY = new Animated.Value(0), imageSize }) => {
     const insets = useSafeAreaInsets()
     const { goBack } = useNavigation()
     const { width, height } = Dimensions.get('window');
@@ -26,27 +27,27 @@ export const PageContainer: FunctionComponent<PropsWithChildren<Props>> =
 
     const headerHeight = scrollY.interpolate({
       inputRange: [0, 100],
-      outputRange: [200, 60],
+      outputRange: [200, 80],
       extrapolate: 'clamp'
     });
 
-    const imageSize = scrollY.interpolate({
-      inputRange: [0, 100],
-      outputRange: [100, 20],
-      extrapolate: 'clamp'
-    });
+    // const imageSize = scrollY.interpolate({
+    //   inputRange: [0, 100],
+    //   outputRange: [200, 32],
+    //   extrapolate: 'clamp'
+    // });
 
     const imagePositionX = scrollY.interpolate({
       inputRange: [0, 100],
-      outputRange: [width / 2 - 50, 0],
+      outputRange: [width / 2 - 100, 30],
       extrapolate: 'clamp'
     });
 
-    const imagePositionY = scrollY.interpolate({
-      inputRange: [0, 100],
-      outputRange: [width / 2 - 50, 0],
-      extrapolate: 'clamp'
-    });
+    // const imagePositionY = scrollY.interpolate({
+    //   inputRange: [0, 100],
+    //   outputRange: [35, 35],
+    //   extrapolate: 'clamp'
+    // });
 
     return (
       <>
@@ -68,11 +69,13 @@ export const PageContainer: FunctionComponent<PropsWithChildren<Props>> =
               width: imageSize,
               height: imageSize,
               right: imagePositionX,
-              top: imagePositionY
+              // top: imagePositionY
             }]}
           />
         </Animated.View>
+
         {children}
+
       </>
     )
   }
@@ -94,11 +97,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     paddingHorizontal: 16,
-    position: 'relative',
+    position: 'absolute',
+    zIndex: 100,
+    width: '100%',
   },
   headerImage: {
     position: 'absolute',
-    resizeMode: 'contain'
+    resizeMode: 'contain',
+    top: 38,
   },
   title: {
     fontSize: 20,
