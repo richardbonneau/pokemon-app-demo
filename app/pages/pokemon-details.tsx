@@ -8,6 +8,7 @@ import { PokemonTypeLabel } from "../../src/components/pokemon-type-label"
 import { Move, PokemonType, URLItem } from "../../src/models"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { getPokemonIdFromUrl, getSingleParam } from "../../src/utils/helpers"
+import { EXTRA_PADDING_BELOW_CONTENT, HEADER_HEIGHT_EXTENDED } from "../../src/utils/ui-constants"
 
 export default function PokemonDetails() {
   const params = useLocalSearchParams()
@@ -66,18 +67,9 @@ export default function PokemonDetails() {
     outputRange: [200, 32],
     extrapolate: 'clamp'
   });
-  useEffect(() => {
-    const id = scrollY.addListener(({ value }) => {
-      const imageSizeValue = scrollY.interpolate({
-        inputRange: [0, 100],
-        outputRange: [200, 32],
-        extrapolate: 'clamp'
-      });
-      console.log('scrollY', value, 'imageSize', imageSizeValue);
-    });
 
-    return () => scrollY.removeListener(id);
-  }, []);
+
+
   return (
     <PageContainer
       title={pokemonName}
@@ -89,20 +81,11 @@ export default function PokemonDetails() {
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           {
-            listener: (event: { nativeEvent: { contentOffset: { y: number } } }) => {
-              const offsetY = event.nativeEvent.contentOffset.y;
-              const imageSizeValue = scrollY.interpolate({
-                inputRange: [0, 100],
-                outputRange: [200, 32],
-                extrapolate: 'clamp'
-              });
-              console.log('scrollY', offsetY, 'imageSize', imageSizeValue);
-            },
             useNativeDriver: false
           }
         )}
       >
-        <View style={{ height: 225 }} />
+        <View style={{ height: HEADER_HEIGHT_EXTENDED + 10 }} />
         <View style={[styles.typesContainer]}>
           {pokemonDetailsData.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
         </View>
@@ -115,6 +98,7 @@ export default function PokemonDetails() {
           <ListItemCard item={item} pathname={"/pages/pokemon-details"} isFirst={index === 0} key={index} />
         ))}
 
+        <View style={styles.extraPadding} />
       </Animated.ScrollView>
     </PageContainer>
   )
@@ -132,5 +116,8 @@ const styles = StyleSheet.create({
   },
   abilitiesContainer: {
     padding: 16,
+  },
+  extraPadding: {
+    height: EXTRA_PADDING_BELOW_CONTENT
   }
 })
