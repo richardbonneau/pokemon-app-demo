@@ -4,7 +4,6 @@ import { Animated, Pressable, StyleSheet, Text, View, Dimensions, Image } from "
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { Colors } from "../utils"
-import { capitalizeFirstLetter } from "../utils/helpers"
 import { HEADER_HEIGHT_COLLAPSED, HEADER_HEIGHT_EXTENDED } from "../utils/ui-constants"
 
 type Props = {
@@ -50,7 +49,7 @@ export const PageContainer: FunctionComponent<PropsWithChildren<Props>> =
               ← Back
             </Text>
           </Pressable>
-          <Text style={[styles.title, styles.part]} ellipsizeMode='tail' numberOfLines={1}>{capitalizeFirstLetter(title)}</Text>
+          <Text style={[styles.title, styles.part]} ellipsizeMode='tail' numberOfLines={1}>{title}</Text>
           <View style={styles.part} />
 
           <Animated.Image
@@ -98,7 +97,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    textAlign: 'center'
+    textAlign: 'center',
+    textTransform: 'capitalize',
   },
   part: {
     flex: 1,
