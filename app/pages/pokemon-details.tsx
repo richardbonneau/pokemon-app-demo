@@ -102,6 +102,7 @@ export default function PokemonDetails() {
           }
         )}
       >
+        <View style={{ height: 225 }} />
         <View style={[styles.typesContainer]}>
           {pokemonDetailsData.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
         </View>
@@ -113,7 +114,7 @@ export default function PokemonDetails() {
         {getEvolutionNames(evolutionChainData?.chain).map((item, index) => (
           <ListItemCard item={item} pathname={"/pages/pokemon-details"} isFirst={index === 0} key={index} />
         ))}
-        <View style={{ height: 200 }} />
+
       </Animated.ScrollView>
     </PageContainer>
   )
