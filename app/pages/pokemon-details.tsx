@@ -50,27 +50,34 @@ export default function PokemonDetails() {
       title={pokemonName}
       imageUri={pokemonDetailsData.sprites.front_default}
     >
+      <View style={styles.contentContainer}>
+        <View style={[styles.typesContainer]}>
+          {pokemonDetailsData.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
+        </View>
 
-      <View style={[styles.typesContainer]}>
-        {pokemonDetailsData.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
+        <Text style={styles.h2}>First 5 moves</Text>
+
+        {pokemonDetailsData?.moves.slice(0, 5).map((item: any, index: any) => (
+          <ListItemCard item={item.move} isFirst={index === 0} key={index} />
+        ))}
+
+        <Text style={styles.h2}>Evolutions</Text>
+
+        {getEvolutionNames(evolutionChainData?.chain).map((item, index) => (
+          <ListItemCard item={item} pathname={"/pages/pokemon-details"} isFirst={index === 0} key={index} />
+        ))}
+
+        <View style={styles.extraPadding} />
       </View>
-
-      {pokemonDetailsData?.moves.slice(0, 5).map((item: any, index: any) => (
-        <ListItemCard item={item.move} isFirst={index === 0} key={index} />
-      ))}
-
-      {getEvolutionNames(evolutionChainData?.chain).map((item, index) => (
-        <ListItemCard item={item} pathname={"/pages/pokemon-details"} isFirst={index === 0} key={index} />
-      ))}
-
-      <View style={styles.extraPadding} />
-
     </PageContainer>
   )
 }
 
 
 const styles = StyleSheet.create({
+  contentContainer: {
+    padding: 16
+  },
   typesContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -78,5 +85,10 @@ const styles = StyleSheet.create({
   },
   extraPadding: {
     height: EXTRA_PADDING_BELOW_CONTENT
+  },
+  h2: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginTop: 16
   },
 })

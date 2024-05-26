@@ -75,7 +75,7 @@ export const PageContainer: FunctionComponent<PropsWithChildren<Props>> =
             }
           )}
         >
-          <View style={{ height: imageUri ? HEADER_HEIGHT_EXTENDED + 10 : HEADER_HEIGHT_COLLAPSED }} />
+          <View style={{ height: imageUri ? HEADER_HEIGHT_EXTENDED : HEADER_HEIGHT_COLLAPSED }} />
           {children}
         </Animated.ScrollView>
       </>
