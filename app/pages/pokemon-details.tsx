@@ -55,7 +55,7 @@ export default function PokemonDetails() {
         {pokemonDetailsData.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
       </View>
 
-      {pokemonDetailsData?.moves.slice(0, 10).map((item: any, index: any) => (
+      {pokemonDetailsData?.moves.slice(0, 5).map((item: any, index: any) => (
         <ListItemCard item={item.move} isFirst={index === 0} key={index} />
       ))}
 
@@ -71,23 +71,12 @@ export default function PokemonDetails() {
 
 
 const styles = StyleSheet.create({
-  contentContainerStyle: {
-    padding: 16,
-  },
   typesContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  abilitiesContainer: {
-    padding: 16,
-  },
   extraPadding: {
     height: EXTRA_PADDING_BELOW_CONTENT
   },
-  errorText: {
-    flex: 1,
-    alignContent: 'center',
-    justifyContent: 'center'
-  }
 })

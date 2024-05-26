@@ -13,7 +13,6 @@ interface IProps {
 
 export const ListItemCard: React.FunctionComponent<IProps> =
   ({ item, pathname, isFirst = false }) => {
-    console.log("item ", item.name)
     return (
       <View style={[styles.card, isFirst && styles.first]}>
         <Link href={
