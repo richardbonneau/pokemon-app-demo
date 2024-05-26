@@ -16,16 +16,11 @@ export function usePokemonData(pokemonId: string) {
             if (!evolutionChainId) {
                 throw new Error('Invalid evolution chain URL');
             }
-
             return PokemonService.getPokemonEvolutionChain(evolutionChainId);
         })
     });
 
-    const errors = []
-    if (pokemonDetailsError) errors.push(pokemonDetailsError);
-    if (evolutionChainError) errors.push(evolutionChainError);
-
     const isLoading = pokemonDetailsIsLoading || evolutionChainIsLoading;
 
-    return { pokemonDetailsData, evolutionChainData, isLoading, errors };
+    return { pokemonDetailsData, evolutionChainData, isLoading, errors: { evolutionChainError, pokemonDetailsError } };
 }

@@ -62,9 +62,7 @@ export const PageContainer: FunctionComponent<PropsWithChildren<Props>> =
             }]}
           />
         </Animated.View>
-
         {children}
-
       </>
     )
   }

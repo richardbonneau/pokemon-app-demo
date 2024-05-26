@@ -1,12 +1,9 @@
 import { useLocalSearchParams } from "expo-router"
 import React, { useMemo, useRef } from "react"
-import { Image, Text, StyleSheet, View, Animated } from "react-native"
+import { Text, StyleSheet, View, Animated } from "react-native"
 import { ListItemCard, PageContainer } from "../../src/components"
-import { useQuery } from "@tanstack/react-query"
-import { PokemonService } from "../../src/services"
 import { PokemonTypeLabel } from "../../src/components/pokemon-type-label"
 import { EvolutionChain, Move, PokemonType, URLItem } from "../../src/models"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { getPokemonIdFromUrl, getSingleParam } from "../../src/utils/helpers"
 import { EXTRA_PADDING_BELOW_CONTENT, HEADER_HEIGHT_EXTENDED, SCROLL_INPUT_RANGE } from "../../src/utils/ui-constants"
 import { usePokemonData } from "../../src/hooks/usePokemonData"
@@ -33,11 +30,12 @@ export default function PokemonDetails() {
     return <PageContainer title="Loading..."><Text>Loading...</Text></PageContainer>;
   }
 
-  if (errors.length > 0) {
+  if (errors.pokemonDetailsError || errors.evolutionChainError) {
     return (
       <PageContainer title="Error">
-        {errors.map((error: any, index: number) => error && <Text key={index}>{error.message}</Text>)}
-      </PageContainer>
+        {errors.pokemonDetailsError && <Text>{errors.pokemonDetailsError.message}</Text>}
+        {errors.evolutionChainError && <Text>{errors.evolutionChainError.message}</Text>}
+      </PageContainer >
     );
   }
 
