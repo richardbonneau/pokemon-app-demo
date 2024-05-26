@@ -41,6 +41,7 @@ export const PageContainer: FunctionComponent<PropsWithChildren<Props>> =
     return (
       <>
         <Animated.View style={[styles.header, {
+          position: imageUri ? 'absolute' : 'relative',
           paddingTop: insets.top,
           height: imageUri ? headerHeight : HEADER_HEIGHT_COLLAPSED
         }]}>
@@ -86,7 +87,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     paddingHorizontal: 16,
-    position: 'absolute',
     zIndex: 100,
     width: '100%',
 
