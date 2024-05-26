@@ -4,7 +4,7 @@ import { Animated, Pressable, StyleSheet, Text, View, Dimensions, Image } from "
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { Colors } from "../utils"
-import { HEADER_HEIGHT_COLLAPSED, HEADER_HEIGHT_EXTENDED } from "../utils/ui-constants"
+import { HEADER_HEIGHT_COLLAPSED, HEADER_HEIGHT_EXTENDED, SCROLL_INPUT_RANGE } from "../utils/ui-constants"
 
 type Props = {
   title: string
@@ -20,19 +20,19 @@ export const PageContainer: FunctionComponent<PropsWithChildren<Props>> =
     const { width } = Dimensions.get('window');
 
     const headerHeight = scrollY.interpolate({
-      inputRange: [0, 100],
+      inputRange: SCROLL_INPUT_RANGE,
       outputRange: [HEADER_HEIGHT_EXTENDED, HEADER_HEIGHT_COLLAPSED],
       extrapolate: 'clamp'
     });
 
     const imagePositionX = scrollY.interpolate({
-      inputRange: [0, 100],
+      inputRange: SCROLL_INPUT_RANGE,
       outputRange: [width / 2 - 100, 30],
       extrapolate: 'clamp'
     });
 
     const imagePositionY = scrollY.interpolate({
-      inputRange: [0, 100],
+      inputRange: SCROLL_INPUT_RANGE,
       outputRange: [75, 38],
       extrapolate: 'clamp'
     });

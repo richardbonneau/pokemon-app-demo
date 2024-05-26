@@ -10,3 +10,11 @@ export interface PokemonType {
 export interface Move {
   move: URLItem
 }
+
+export type EvolutionChain = {
+  species: {
+    name: string;
+    url: string;
+  };
+  evolves_to: EvolutionChain[];
+};

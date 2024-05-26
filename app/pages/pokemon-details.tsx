@@ -1,56 +1,47 @@
 import { useLocalSearchParams } from "expo-router"
-import React, { useCallback, useEffect, useMemo, useRef } from "react"
-import { Image, Text, StyleSheet, View, FlatList, Animated } from "react-native"
+import React, { useMemo, useRef } from "react"
+import { Image, Text, StyleSheet, View, Animated } from "react-native"
 import { ListItemCard, PageContainer } from "../../src/components"
 import { useQuery } from "@tanstack/react-query"
 import { PokemonService } from "../../src/services"
 import { PokemonTypeLabel } from "../../src/components/pokemon-type-label"
-import { Move, PokemonType, URLItem } from "../../src/models"
+import { EvolutionChain, Move, PokemonType, URLItem } from "../../src/models"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { getPokemonIdFromUrl, getSingleParam } from "../../src/utils/helpers"
-import { EXTRA_PADDING_BELOW_CONTENT, HEADER_HEIGHT_EXTENDED } from "../../src/utils/ui-constants"
+import { EXTRA_PADDING_BELOW_CONTENT, HEADER_HEIGHT_EXTENDED, SCROLL_INPUT_RANGE } from "../../src/utils/ui-constants"
+import { usePokemonData } from "../../src/hooks/usePokemonData"
 
 export default function PokemonDetails() {
   const params = useLocalSearchParams()
-  const insets = useSafeAreaInsets()
-
-  const scrollY = useRef(new Animated.Value(0)).current;
-
   const pokemonId = useMemo(() => getPokemonIdFromUrl(params.url), [params.url])
   const pokemonName = useMemo(() => getSingleParam(params.name) || "Pokemon", [params.name])
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const imageSize = scrollY.interpolate({
+    inputRange: SCROLL_INPUT_RANGE,
+    outputRange: [200, 32],
+    extrapolate: 'clamp'
+  });
 
   if (!pokemonId) {
-    return <PageContainer title="Error"><Text>Error: Invalid URL</Text></PageContainer>
+    return <PageContainer title="Error">
+      <Text>Error: Invalid URL</Text></PageContainer>
   }
 
-  const { data: pokemonDetailsData, isLoading: pokemonDetailsIsLoading, error: pokemonDetailsError } = useQuery({
-    queryKey: ['pokemonDetails', pokemonId],
-    queryFn: () => PokemonService.getPokemonDetails(pokemonId)
-  });
+  const { pokemonDetailsData, evolutionChainData, isLoading, errors } = usePokemonData(pokemonId);
 
-  const { data: evolutionChainData, isLoading: evolutionChainIsLoading, error: evolutionChainError } = useQuery({
-    queryKey: ['evolutionChain', pokemonId],
-    queryFn: () => PokemonService.getPokemonSpecies(pokemonId).then((species) => {
-      const evolutionChainId = getPokemonIdFromUrl(species.evolution_chain.url);
-
-      if (!evolutionChainId) {
-        throw new Error('Invalid evolution chain URL');
-      }
-
-      return PokemonService.getPokemonEvolutionChain(evolutionChainId);
-    })
-  });
-
-  if (pokemonDetailsIsLoading) {
+  if (isLoading) {
     return <PageContainer title="Loading..."><Text>Loading...</Text></PageContainer>;
   }
 
-  if (pokemonDetailsError) {
-    return <PageContainer title="Error"><Text>An error occurred: {pokemonDetailsError.message}</Text></PageContainer>;
+  if (errors.length > 0) {
+    return (
+      <PageContainer title="Error">
+        {errors.map((error: any, index: number) => error && <Text key={index}>{error.message}</Text>)}
+      </PageContainer>
+    );
   }
-  console.log("evolutionChainData", evolutionChainData)
 
-  const getEvolutionNames = (chain: any) => {
+  const getEvolutionNames = (chain: EvolutionChain) => {
     const urlItems: URLItem[] = [];
     let currentChain = chain;
     while (currentChain) {
@@ -61,14 +52,6 @@ export default function PokemonDetails() {
     }
     return urlItems;
   };
-
-  const imageSize = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [200, 32],
-    extrapolate: 'clamp'
-  });
-
-
 
   return (
     <PageContainer
@@ -119,5 +102,10 @@ const styles = StyleSheet.create({
   },
   extraPadding: {
     height: EXTRA_PADDING_BELOW_CONTENT
+  },
+  errorText: {
+    flex: 1,
+    alignContent: 'center',
+    justifyContent: 'center'
   }
 })
