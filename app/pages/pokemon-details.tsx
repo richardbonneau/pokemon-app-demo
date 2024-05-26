@@ -12,12 +12,6 @@ export default function PokemonDetails() {
   const params = useLocalSearchParams()
   const pokemonId = useMemo(() => getPokemonIdFromUrl(params.url), [params.url])
   const pokemonName = useMemo(() => getSingleParam(params.name) || "Pokemon", [params.name])
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const imageSize = scrollY.interpolate({
-    inputRange: SCROLL_INPUT_RANGE,
-    outputRange: [200, 32],
-    extrapolate: 'clamp'
-  });
 
   if (!pokemonId) {
     return <PageContainer title="Error">
@@ -55,32 +49,22 @@ export default function PokemonDetails() {
     <PageContainer
       title={pokemonName}
       imageUri={pokemonDetailsData.sprites.front_default}
-      scrollY={scrollY}
-      imageSize={imageSize}
     >
-      <Animated.ScrollView
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          {
-            useNativeDriver: false
-          }
-        )}
-      >
-        <View style={{ height: HEADER_HEIGHT_EXTENDED + 10 }} />
-        <View style={[styles.typesContainer]}>
-          {pokemonDetailsData.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
-        </View>
 
-        {pokemonDetailsData?.moves.slice(0, 10).map((item: any, index: any) => (
-          <ListItemCard item={item.move} isFirst={index === 0} key={index} />
-        ))}
+      <View style={[styles.typesContainer]}>
+        {pokemonDetailsData.types.map((type: PokemonType, i: number) => (<PokemonTypeLabel type={type.type.name} key={i} />))}
+      </View>
 
-        {getEvolutionNames(evolutionChainData?.chain).map((item, index) => (
-          <ListItemCard item={item} pathname={"/pages/pokemon-details"} isFirst={index === 0} key={index} />
-        ))}
+      {pokemonDetailsData?.moves.slice(0, 10).map((item: any, index: any) => (
+        <ListItemCard item={item.move} isFirst={index === 0} key={index} />
+      ))}
 
-        <View style={styles.extraPadding} />
-      </Animated.ScrollView>
+      {getEvolutionNames(evolutionChainData?.chain).map((item, index) => (
+        <ListItemCard item={item} pathname={"/pages/pokemon-details"} isFirst={index === 0} key={index} />
+      ))}
+
+      <View style={styles.extraPadding} />
+
     </PageContainer>
   )
 }

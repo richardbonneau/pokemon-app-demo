@@ -9,15 +9,20 @@ import { HEADER_HEIGHT_COLLAPSED, HEADER_HEIGHT_EXTENDED, SCROLL_INPUT_RANGE } f
 type Props = {
   title: string
   imageUri?: string,
-  scrollY?: Animated.Value,
-  imageSize?: Animated.AnimatedInterpolation<string | number>
 }
 
 export const PageContainer: FunctionComponent<PropsWithChildren<Props>> =
-  ({ children, title, imageUri, scrollY = new Animated.Value(0), imageSize }) => {
+  ({ children, title, imageUri }) => {
     const insets = useSafeAreaInsets()
     const { goBack } = useNavigation()
     const { width } = Dimensions.get('window');
+    const scrollY = useRef(new Animated.Value(0)).current;
+
+    const imageSize = scrollY.interpolate({
+      inputRange: SCROLL_INPUT_RANGE,
+      outputRange: [200, 32],
+      extrapolate: 'clamp'
+    });
 
     const headerHeight = scrollY.interpolate({
       inputRange: SCROLL_INPUT_RANGE,
@@ -40,7 +45,7 @@ export const PageContainer: FunctionComponent<PropsWithChildren<Props>> =
     return (
       <>
         <Animated.View style={[styles.header, {
-          position: imageUri ? 'absolute' : 'relative',
+
           paddingTop: insets.top,
           height: imageUri ? headerHeight : HEADER_HEIGHT_COLLAPSED
         }]}>
@@ -62,7 +67,17 @@ export const PageContainer: FunctionComponent<PropsWithChildren<Props>> =
             }]}
           />
         </Animated.View>
-        {children}
+        <Animated.ScrollView
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            {
+              useNativeDriver: false
+            }
+          )}
+        >
+          <View style={{ height: imageUri ? HEADER_HEIGHT_EXTENDED + 10 : HEADER_HEIGHT_COLLAPSED }} />
+          {children}
+        </Animated.ScrollView>
       </>
     )
   }
@@ -86,6 +101,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     zIndex: 100,
     width: '100%',
+    position: 'absolute'
 
   },
   headerImage: {
