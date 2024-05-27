@@ -49,7 +49,7 @@ export const PageContainer: FunctionComponent<PropsWithChildren<Props>> =
           paddingTop: insets.top,
           height: imageUri ? headerHeight : HEADER_HEIGHT_COLLAPSED
         }]}>
-          <Pressable onPress={goBack} style={[styles.button, styles.part]}>
+          <Pressable onPress={goBack} style={[styles.part]}>
             <Text style={styles.back}>
               ← Back
             </Text>
@@ -86,10 +86,7 @@ const styles = StyleSheet.create({
   back: {
     fontSize: 15,
     textTransform: 'uppercase',
-    fontWeight: 'bold'
-  },
-  button: {
-    paddingVertical: 10
+    fontWeight: 'bold',
   },
   header: {
     backgroundColor: Colors.WHITE,
