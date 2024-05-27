@@ -11,3 +11,7 @@ export function getPokemonIdFromUrl(url: string | string[] | undefined): string 
         return parts[parts.length - 2];
     }
 }
+
+export function urlReplacePokemonSpeciesWithPokemon(url: string): string {
+    return url.replace('pokemon-species', 'pokemon');
+}

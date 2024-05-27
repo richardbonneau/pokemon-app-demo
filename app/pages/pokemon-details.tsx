@@ -1,12 +1,37 @@
 import { useLocalSearchParams } from "expo-router"
-import React, { useMemo, useRef } from "react"
-import { Text, StyleSheet, View, Animated } from "react-native"
+import React, { useMemo } from "react"
+import { Text, StyleSheet, View } from "react-native"
 import { ListItemCard, PageContainer } from "../../src/components"
 import { PokemonTypeLabel } from "../../src/components/pokemon-type-label"
-import { EvolutionChain, Move, PokemonType, URLItem } from "../../src/models"
-import { getPokemonIdFromUrl, getSingleParam } from "../../src/utils/helpers"
-import { EXTRA_PADDING_BELOW_CONTENT, HEADER_HEIGHT_EXTENDED, SCROLL_INPUT_RANGE } from "../../src/utils/ui-constants"
+import { EvolutionChain, PokemonType, URLItem } from "../../src/models"
+import { getPokemonIdFromUrl, getSingleParam, urlReplacePokemonSpeciesWithPokemon } from "../../src/utils/helpers"
+import { EXTRA_PADDING_BELOW_CONTENT } from "../../src/utils/ui-constants"
 import { usePokemonData } from "../../src/hooks/usePokemonData"
+
+const isSpeciesInUrlItems = (urlItems: URLItem[], speciesName: string) => {
+  return urlItems.some(item => item.name === speciesName)
+}
+
+const getEvolutionNames = (chain: EvolutionChain, currentPokemonName: string) => {
+  const urlItems: URLItem[] = [];
+  let currentChain = chain;
+
+  while (currentChain) {
+    if (currentChain.evolves_to.length > 1) {
+      currentChain.evolves_to.forEach((evolution) => {
+        const species = evolution.species;
+        species.url = urlReplacePokemonSpeciesWithPokemon(species.url);
+        if (species.name !== currentPokemonName && !isSpeciesInUrlItems(urlItems, species.name)) urlItems.push(species);
+      });
+    }
+
+    const currentSpecies = currentChain.species;
+    currentSpecies.url = urlReplacePokemonSpeciesWithPokemon(currentSpecies.url);
+    if (currentSpecies.name !== currentPokemonName && !isSpeciesInUrlItems(urlItems, currentSpecies.name)) urlItems.push(currentChain.species);
+    currentChain = currentChain.evolves_to[0];
+  }
+  return urlItems;
+}
 
 export default function PokemonDetails() {
   const params = useLocalSearchParams()
@@ -33,18 +58,6 @@ export default function PokemonDetails() {
     );
   }
 
-  const getEvolutionNames = (chain: EvolutionChain) => {
-    const urlItems: URLItem[] = [];
-    let currentChain = chain;
-    while (currentChain) {
-      const currentSpecies = currentChain.species;
-      currentSpecies.url = currentSpecies.url.replace('pokemon-species', 'pokemon');
-      if (currentSpecies.name !== pokemonName) urlItems.push(currentChain.species);
-      currentChain = currentChain.evolves_to[0];
-    }
-    return urlItems;
-  };
-
   return (
     <PageContainer
       title={pokemonName}
@@ -63,7 +76,7 @@ export default function PokemonDetails() {
 
         <Text style={styles.h2}>Evolutions</Text>
 
-        {getEvolutionNames(evolutionChainData?.chain).map((item, index) => (
+        {getEvolutionNames(evolutionChainData?.chain, pokemonName).map((item, index) => (
           <ListItemCard item={item} pathname={"/pages/pokemon-details"} isFirst={index === 0} key={index} />
         ))}
 
@@ -72,7 +85,6 @@ export default function PokemonDetails() {
     </PageContainer>
   )
 }
-
 
 const styles = StyleSheet.create({
   contentContainer: {

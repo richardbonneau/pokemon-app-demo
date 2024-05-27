@@ -8,8 +8,6 @@ interface IProps {
 
 export const PokemonTypeLabel: React.FunctionComponent<IProps> =
     ({ type }) => {
-
-
         return (
             <View style={[styles.container, {
                 backgroundColor: TypeColors[type as keyof typeof TypeColors]
