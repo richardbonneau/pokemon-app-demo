@@ -1,4 +1,4 @@
 export const HEADER_HEIGHT_EXTENDED = 300;
-export const HEADER_HEIGHT_COLLAPSED = 100;
+export const HEADER_HEIGHT_COLLAPSED = 80;
 export const EXTRA_PADDING_BELOW_CONTENT = 300;
 export const SCROLL_INPUT_RANGE = [0, 200];
